@@ -26,8 +26,15 @@ use "../trie"
 type Cap is (Bool | U16 | String)
 
 class val TerminfoDb
-  let name: String ref
+  """
+  Parses (at construction time) a compiled terminfo database from bytes.
+  """
 
+  // The canonical name, including aliases and description, of this terminal type.
+  let name: String val
+
+  // these are stored here since we don't have real constants and another tool
+  // may want these lists
   let bool_names_short: Array[String val] val
   let bool_names_full: Array[String val] val
   let num_names_short: Array[String val] val
@@ -79,14 +86,9 @@ class val TerminfoDb
                        (num_count * 2) + (str_count * 2)
     rb.append(data.trim(header_size, non_str_size + 1))
 
-    // the terminal type name is a null-turminated string
-    name = String(name_size.usize())
-    var n: U8 = rb.u8()
-    while n != 0 do
-      // if the lengths don't match, who cares; pony's got our back!
-      name.push(n)
-      n = rb.u8()
-    end
+    let name_arr = data.trim(header_size + 1, header_size + name_size + 1)
+    name = String.from_array(name_arr)
+    rb.skip(name_size)
 
     for (i, cap_name_short) in bool_names_short.pairs() do
       if i == bool_count then
