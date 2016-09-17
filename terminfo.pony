@@ -1,3 +1,22 @@
+"""
+# terminfo package
+
+Parses terminfo compiled databases. Allows querying terminal capabilities.
+
+```
+use "terminfo"
+
+actor Main
+  new create(env: Env) =>
+    try
+      let db = GetTerminalInfo(env) as TerminfoDb
+      let underline = db("smul") as String
+      let underline_off = db("rmul") as String
+      env.out.print("Hello " + underline + "world!" + underline_off)
+    end
+```
+"""
+
 use "options"
 use "collections"
 use "files"
@@ -18,7 +37,7 @@ class val TerminfoDb
 
   // the main capability table. holds all the various types of capabilities in
   // one place because i'm lazy.
-  let caps: TrieNode[Cap]
+  let _caps: TrieNode[Cap]
 
   new val create(data: Array[U8 val] val) ? =>
     let rb = Reader
@@ -32,7 +51,7 @@ class val TerminfoDb
     str_names_short = StrNamesShort()
     str_names_full = StrNamesFull()
 
-    caps = TrieNode[Cap]
+    _caps = TrieNode[Cap]
 
     match rb.u16_le()
     | 0x11a => None // 0432 in octal; not supported in pony?
@@ -75,8 +94,8 @@ class val TerminfoDb
       end
       let cap_name_full = bool_names_full(i)
       if rb.u8() != 0 then
-        caps.insert(StringBytes(cap_name_short), true)
-        caps.insert(StringBytes(cap_name_full), true)
+        _caps.insert(StringBytes(cap_name_short), true)
+        _caps.insert(StringBytes(cap_name_full), true)
       end
     end
 
@@ -91,8 +110,8 @@ class val TerminfoDb
       end
       let cap_name_full = num_names_full(i)
       let num = rb.u16_le()
-      caps.insert(StringBytes(cap_name_short), num)
-      caps.insert(StringBytes(cap_name_full), num)
+      _caps.insert(StringBytes(cap_name_short), num)
+      _caps.insert(StringBytes(cap_name_full), num)
     end
 
     let str_offsets = Map[USize, USize]()
@@ -126,12 +145,16 @@ class val TerminfoDb
       let str_array = data.trim(non_str_size + off + 1,
                                 non_str_size + off + this_str_size + 1)
       let str = String.from_array(str_array)
-      caps.insert(StringBytes(str_names_full(i)), str)
-      caps.insert(StringBytes(str_names_short(i)), str)
+      _caps.insert(StringBytes(str_names_full(i)), str)
+      _caps.insert(StringBytes(str_names_short(i)), str)
     end
 
   fun val apply(cap: String): (None | Cap) =>
-    caps(StringBytes(cap))
+    """
+    Retrieve a capability. Capabilities are accessible by full name or short
+    name (e.g. both "enter_underline_mode" and "smul" work) via `apply()`.
+    """
+    _caps(StringBytes(cap))
 
 primitive GetTerminfoDb
   """
@@ -150,7 +173,8 @@ primitive GetTerminfoDb
 
 primitive GetTerminalName
   """
-  Get name and terminfo database of current terminal, according to $TERM.
+  Get name and terminfo database location for current terminal, according to
+  $TERM.
   """
   fun apply(vars: Map[String, String] val): (None | String) =>
     try
@@ -162,6 +186,24 @@ primitive GetTerminalName
       let filename = Path.join(Path.join("/usr/share/terminfo", first_letter),
                               term_name)
       filename
+    else
+      None
+    end
+
+primitive GetTerminalInfo
+  """
+  For the truly lazy. Get and parse the terminfo database for the current
+  terminal, according to $TERM.
+  """
+  fun apply(env: Env): (None | TerminfoDb) =>
+    let env_vars = EnvVars(env.vars())
+    match GetTerminalName(env_vars)
+    | let filename: String =>
+      try
+        match GetTerminfoDb(filename, env.root as AmbientAuth)
+        | let db: TerminfoDb => db
+        end
+      end
     else
       None
     end
