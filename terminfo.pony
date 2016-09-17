@@ -31,10 +31,11 @@ class val TerminfoDb
   """
 
   // The canonical name, including aliases and description, of this terminal type.
+  // XXX how do I give this a docstring?
   let name: String val
 
-  // these are stored here since we don't have real constants and another tool
-  // may want these lists
+  /* Since we don't have real constants and, another tool may want these lists,
+   * make the accessible here. */
   let bool_names_short: Array[String val] val
   let bool_names_full: Array[String val] val
   let num_names_short: Array[String val] val
@@ -42,8 +43,6 @@ class val TerminfoDb
   let str_names_short: Array[String val] val
   let str_names_full: Array[String val] val
 
-  // the main capability table. holds all the various types of capabilities in
-  // one place because i'm lazy.
   let _caps: TrieNode[Cap]
 
   new val create(data: Array[U8 val] val) ? =>
@@ -77,7 +76,8 @@ class val TerminfoDb
     elseif str_count < 0 then error
     elseif str_size < 0 then error end
 
-    let bool_count_even = if (bool_count % 2) == 0 then
+    // nums will start on a 2 byte word boundary.
+    let bool_count_even = if ((name_size + bool_count) % 2) == 0 then
       bool_count
     else
       bool_count + 1
@@ -86,7 +86,7 @@ class val TerminfoDb
                        (num_count * 2) + (str_count * 2)
     rb.append(data.trim(header_size, non_str_size + 1))
 
-    let name_arr = data.trim(header_size + 1, header_size + name_size + 1)
+    let name_arr = data.trim(header_size, header_size + name_size)
     name = String.from_array(name_arr)
     rb.skip(name_size)
 
@@ -102,7 +102,7 @@ class val TerminfoDb
     end
 
     // get to an even byte boundary
-    if ((name_size + bool_count) % 2) != 0 then
+    if (bool_count_even - bool_count) != 0 then
       rb.u8()
     end
 
@@ -167,7 +167,8 @@ primitive GetTerminfoDb
       (None | TerminfoDb) =>
     try
       let f = OpenFile(FilePath(auth, filename)) as File
-      // biggest i saw on os x was 3402 lol
+      /* XXX biggest i saw on os x was 3402 lol. There's probably a constant max
+       * somewhere in the ncurses codebase. */
       TerminfoDb(f.read(2 << 12))
     else
       None
