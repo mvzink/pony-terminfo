@@ -26,7 +26,7 @@ class iso _TestParamStackOps is UnitTest
   fun name(): String => "parameter stack operations"
 
   fun apply(h: TestHelper) ? =>
-    let parms: Array[StackObject] val = recover ["hello", 42, true] end
+    let parms: Array[StackObject] val = recover ["hello", 42, true, false] end
     let ps = ParamStack(parms)
     let expected: String ref = String
 
@@ -70,6 +70,21 @@ class iso _TestParamStackOps is UnitTest
     h.assert_eq[String ref](ps.out, expected)
 
     ps.push_i(3) // true
-    ps.push_i(3)
+    ps.push_i(4) // false
     ps.lor()
-    // TODO can't (don't want to) really test these without if/then/else
+    h.assert_eq[Bool](ps.if_then(), true)
+
+    ps.push_i(4) // false
+    ps.push_i(4) // false
+    ps.lor()
+    h.assert_eq[Bool](ps.if_then(), false)
+
+    ps.push_i(3) // true
+    ps.push_i(4) // false
+    ps.land()
+    h.assert_eq[Bool](ps.if_then(), false)
+
+    ps.push_i(3) // true
+    ps.push_i(3) // true
+    ps.land()
+    h.assert_eq[Bool](ps.if_then(), true)

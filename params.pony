@@ -251,25 +251,22 @@ class ParamStack
   fun ref add_i(i: U64) ? =>
     """
     %i add 1 to first two parameters (for ANSI terminals)
+
+    XXX ??? and push them? this is stupid.
     """
+    push_i(1)
+    push_i(2)
     let a = _stack.pop() as U64
     let b = _stack.pop() as U64
     _stack.push(b + i)
     _stack.push(a + i)
 
-  fun ref if_begin() =>
+  fun ref if_then(): Bool ? =>
     """
     %? expr %t thenpart %e elsepart %;
 
     TODO rtfm and figure out how this is supposed to work
+    XXX seems like the only thing the stack machine needs to do is give back the
+    result of the expression; everything else is the caller's responsibility.
     """
-    None
-
-  fun ref if_then() =>
-    None
-
-  fun ref if_else() =>
-    None
-
-  fun ref if_end() =>
-    None
+    _stack.pop() as Bool
