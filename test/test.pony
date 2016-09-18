@@ -9,16 +9,15 @@ actor Main is TestList
     None
 
   fun tag tests(test: PonyTest) =>
-    test(_TestHeaderParsing)
+    test(_TestXtermParsing)
     test(_TestParamStackOps)
 
-class iso _TestHeaderParsing is UnitTest
-  fun name(): String => "header parsing"
+class iso _TestXtermParsing is UnitTest
+  fun name(): String => "xterm parsing"
 
   fun apply(h: TestHelper) ? =>
     let db = GetTerminfoDb("/usr/share/terminfo/78/xterm-256color",
                            h.env.root as AmbientAuth) as TerminfoDb
-
     h.assert_true(db("am") as Bool)
     h.assert_eq[U16](db("cols") as U16, 80)
 
