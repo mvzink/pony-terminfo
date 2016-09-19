@@ -10,7 +10,7 @@ primitive _Sub
 
 primitive _Mul
   fun apply(a: U64, b: U64): U64 =>
-    a - b
+    a * b
 
 primitive _Div
   fun apply(a: U64, b: U64): U64 =>
@@ -248,7 +248,7 @@ class ParamStack
       _stack.push(false)
     end
 
-  fun ref add_i(i: U64) ? =>
+  fun ref add_i() ? =>
     """
     %i add 1 to first two parameters (for ANSI terminals)
 
@@ -258,8 +258,8 @@ class ParamStack
     push_i(2)
     let a = _stack.pop() as U64
     let b = _stack.pop() as U64
-    _stack.push(b + i)
-    _stack.push(a + i)
+    _stack.push(b + 1)
+    _stack.push(a + 1)
 
   fun ref if_then(): Bool ? =>
     """
