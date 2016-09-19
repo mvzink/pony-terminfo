@@ -42,8 +42,8 @@ class ParamStack
 
   In reality, it's a bit more than a stack, since terminfo strings also require
   us to implement:
-  * dynamic and static variable-type things (TODO)
-  * character and string formatting (TODO)
+  * dynamic and static variable-type things
+  * character and string formatting (mostly falls to the user)
   * production of a byte array in parallel to the stack
 
   This class doesn't parse anything, but has operations for all of the parseable
