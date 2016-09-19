@@ -54,29 +54,42 @@ class ParamStack
   let _params: Array[StackObject] val
   let _stack: List[StackObject]
   let _vars: Map[U8, StackObject]
-  let out: String ref
+  // XXX TODO this really needs to be an iso or trn that we only pass out
+  // destructively/upon dispose
+  var _out: String iso
 
   new create(params': Array[StackObject] val) =>
     _params = params'
     _stack = List[StackObject]()
     _vars = Map[U8, StackObject](26 * 2)
-    out = recover iso String end
+    _out = recover String end
+
+  fun ref out(): String iso^ =>
+    let out': String iso = recover String end
+    _out = consume out'
 
   // Client's responsibility.
   fun ref append(s: String) =>
     """
-    All the string's non-"format" characters go in here, including those
-    formatted by the client through %% and numeric formatting, i.e. (from the
-    manual):
+    All the string's non-"format" characters go in here (or `push()`), including
+    those formatted by the client through %% and numeric formatting, e.g. (from
+    the manual):
 
+    ```
     %% outputs `%'
-
+    ```
     """
-    out.append(s)
+    _out.append(s)
+
+  fun ref push(c: U8) =>
+    """
+    Like `append()`, but for single characters.
+    """
+    _out.push(c)
 
   // Stack's responsibility:
 
-  fun ref format(fmt: FormatSettings) ? =>
+  fun ref format(fmt: FormatSettings[FormatInt, PrefixNumber] = FormatDefaultNumber) ? =>
     """
     %[[:]flags][width[.precision]][doxXs]
         as in printf, flags are [-+#] and space. Use a `:' to allow the next

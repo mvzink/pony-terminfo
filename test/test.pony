@@ -26,15 +26,16 @@ class iso _TestParamStackOps is UnitTest
 
   fun apply(h: TestHelper) ? =>
     let parms: Array[StackObject] val = recover ["hello", 42, true, false] end
-    let ps = ParamStack(parms)
-    let expected: String ref = String
+    let ps = recover iso ParamStack(parms) end
+    var expected: String iso = recover String end
 
     ps.char_const('a')
     ps.int_const(4)
     ps.add()
     ps.print_c()
     expected.push('a' + 4)
-    h.assert_eq[String ref](ps.out, expected)
+    h.assert_eq[String ref](ps.out(), consume expected)
+    expected = recover String end
 
     try
       ps.add()
@@ -43,12 +44,14 @@ class iso _TestParamStackOps is UnitTest
 
     ps.append("f")
     expected.append("f")
-    h.assert_eq[String ref](ps.out, expected)
+    h.assert_eq[String ref](ps.out(), consume expected)
+    expected = recover String end
 
     ps.push_i(1) // "hello"
     ps.print_s()
     expected.append(parms(0) as String)
-    h.assert_eq[String ref](ps.out, expected)
+    h.assert_eq[String ref](ps.out(), consume expected)
+    expected = recover String end
 
     ps.push_i(2) // 42
     ps.set_var('a')
@@ -57,7 +60,8 @@ class iso _TestParamStackOps is UnitTest
     ps.sub()
     expected.append("21")
     ps.format(FormatDefaultNumber)
-    h.assert_eq[String ref](ps.out, expected)
+    h.assert_eq[String ref](ps.out(), consume expected)
+    expected = recover String end
 
     ps.char_const('a')
     ps.get_var('a')
@@ -66,7 +70,7 @@ class iso _TestParamStackOps is UnitTest
     ps.add()
     expected.push('a' + 21)
     ps.print_c()
-    h.assert_eq[String ref](ps.out, expected)
+    h.assert_eq[String ref](ps.out(), consume expected)
 
     ps.push_i(3) // true
     ps.push_i(4) // false
