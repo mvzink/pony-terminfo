@@ -183,7 +183,7 @@ primitive GetTerminalName
     try
       let term_name = vars("TERM")
       let first_letter = recover val
-        let hex_fmt = FormatSettingsInt.set_format(FormatHexBare).set_width(2)
+        let hex_fmt = FormatSettingsInt.set_format(FormatHexSmallBare).set_width(2)
         term_name(0).string(hex_fmt)
       end
       let filename = Path.join(Path.join("/usr/share/terminfo", first_letter),
