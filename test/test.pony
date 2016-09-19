@@ -11,6 +11,7 @@ actor Main is TestList
   fun tag tests(test: PonyTest) =>
     test(_TestXtermParsing)
     test(_TestParamStackOps)
+    test(_TestParamParseBasics)
 
 class iso _TestXtermParsing is UnitTest
   fun name(): String => "xterm parsing"
@@ -91,3 +92,23 @@ class iso _TestParamStackOps is UnitTest
     ps.push_i(3) // true
     ps.land()
     h.assert_eq[Bool](ps.if_then(), true)
+
+class iso _TestParamParseBasics is UnitTest
+  fun name(): String => "parameter stack operations"
+
+  fun _test(h: TestHelper, test: String, expected: String) ? =>
+    let parms: Array[StackObject] val = recover ["hello", 42, true, false] end
+    let r = recover val ParseString(test, parms) end
+    h.assert_eq[String val](r, expected)
+
+  fun apply(h: TestHelper) ? =>
+    // 42 + 32 = 74 -> "J"
+    _test(h, "%' '%'*'%+%c", "J")
+    // 42 * 2 = 84 -> "T"
+    _test(h, "%p2%{2}%*%c", "T")
+
+    _test(h, "%'!'%p1%s%c", "hello!")
+    _test(h, "%p2%d", "42")
+    _test(h, "%p1%Pa%p1%' '%','%ga%s%c%c%s", "hello, hello")
+    _test(h, "%{74}%c", "J")
+
