@@ -11,7 +11,7 @@ actor Main is TestList
   fun tag tests(test: PonyTest) =>
     test(_TestXtermParsing)
     test(_TestParamStackOps)
-    test(_TestParamParseBasics)
+    test(_TestCapParseBasics)
 
 class iso _TestXtermParsing is UnitTest
   fun name(): String => "xterm parsing"
@@ -93,8 +93,8 @@ class iso _TestParamStackOps is UnitTest
     ps.land()
     h.assert_eq[Bool](ps.if_then(), true)
 
-class iso _TestParamParseBasics is UnitTest
-  fun name(): String => "parameter stack operations"
+class iso _TestCapParseBasics is UnitTest
+  fun name(): String => "basic capability string parsing operations"
 
   fun _test(h: TestHelper, test: String, expected: String) ? =>
     let parms: Array[StackObject] val = recover ["hello", 42, true, false] end

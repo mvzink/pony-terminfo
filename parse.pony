@@ -37,7 +37,6 @@ primitive ParseString
           else
             error
           end
-          // ps.int_const(n.read_int())
         | 'l' => ps.str_len()
         | '+' => ps.add()
         | '-' => ps.sub()
@@ -55,12 +54,11 @@ primitive ParseString
         | '!' => ps.lnot()
         | '~' => ps.bnot()
         | 'i' => ps.add_i() // still idk wtf
-        | 'd' =>
-          let fmt = FormatDefaultNumber
-          ps.format(fmt)
+        | 'd' => ps.format(FormatDefaultNumber)
         | 'o' => ps.format(FormatSettingsInt.set_format(FormatOctalBare))
         | 'x' => ps.format(FormatSettingsInt.set_format(FormatHexSmallBare))
         | 'X' => ps.format(FormatSettingsInt.set_format(FormatHexBare))
+        // TODO:
         // %[[:]flags][width[.precision]][doxXs]
         //      as in printf, flags are [-+#] and space.  Use a `:' to allow the next character to be a `-' flag, avoiding interpreting "%-" as an operator.
         // | '?' => mode = If // ok that's not the right way to do this
@@ -77,34 +75,3 @@ primitive ParseString
       end
     end
     ps.out()
-      // %%   outputs `%'
-      // %[[:]flags][width[.precision]][doxXs]
-      //      as in printf, flags are [-+#] and space.  Use a `:' to allow the next character to be a `-' flag, avoiding interpreting "%-" as an operator.
-      // %c   print pop() like %c in printf
-      // %s   print pop() like %s in printf
-      // %p[1-9]
-      //      push i'th parameter
-      // %P[a-z]
-      //      set dynamic variable [a-z] to pop()
-      // %g[a-z]
-      //      get dynamic variable [a-z] and push it
-      // %P[A-Z]
-      //      set static variable [a-z] to pop()
-      // %g[A-Z]
-      //      get static variable [a-z] and push it
-      // %'c' char constant c
-      // %{nn}
-      //      integer constant nn
-      // %l   push strlen(pop)
-      // %+ %- %* %/ %m
-      //      arithmetic (%m is mod): push(pop() op pop())
-      // %& %| %^
-      //      bit operations (AND, OR and exclusive-OR): push(pop() op pop())
-      // %= %> %<
-      //      logical operations: push(pop() op pop())
-      // %A, %O
-      //      logical AND and OR operations (for conditionals)
-      // %! %~
-      //      unary operations (logical and bit complement): push(op pop())
-      // %i   add 1 to first two parameters (for ANSI terminals)
-      // %? expr %t thenpart %e elsepart %;
