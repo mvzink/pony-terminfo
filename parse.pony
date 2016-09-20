@@ -5,6 +5,49 @@ primitive If // Then? Else? idk
 type Mode is (None | Percent | If)
 
 primitive ParseString
+
+  fun _is_digit(i: U8): Bool =>
+    (48 <= i) and (i <= 57)
+
+  fun _parse_num(i: U8, sb: StringBytes, ps: ParamStack) ? =>
+    let fmt = FormatSettingsInt
+
+    var flag = i
+    while not _is_digit(flag) or (flag == '0') do
+      match flag
+      | '#' => error
+      | '0' => fmt.set_fill('0')
+      | '-' => fmt.set_align(AlignLeft)
+      | ' ' => fmt.set_prefix(PrefixSpace)
+      | '+' => fmt.set_prefix(PrefixSign)
+      end
+      flag = sb.next()
+    end
+
+    let width_str = String
+    if _is_digit(flag) then
+      width_str.push(flag)
+    end
+    while _is_digit(sb.peek()) do
+      width_str.push(sb.next())
+    end
+    match width_str.read_int[USize]()
+    | (let width: USize, let used: USize) =>
+      if used > 0 then
+        fmt.set_width(width)
+      end
+    end
+    if sb.peek() == '.' then
+      // precision
+      error
+    end
+    match sb.next()
+    | 'd' => ps.format(fmt)
+    | 'o' => ps.format(fmt.set_format(FormatOctalBare))
+    | 'x' => ps.format(fmt.set_format(FormatHexSmallBare))
+    | 'X' => ps.format(fmt.set_format(FormatHexBare))
+    end
+
   fun apply(s: String, params: Array[StackObject] val): String iso^ ? =>
     let sb = StringBytes(s)
     let ps = ParamStack(params)
@@ -58,14 +101,18 @@ primitive ParseString
         | 'o' => ps.format(FormatSettingsInt.set_format(FormatOctalBare))
         | 'x' => ps.format(FormatSettingsInt.set_format(FormatHexSmallBare))
         | 'X' => ps.format(FormatSettingsInt.set_format(FormatHexBare))
-        // TODO:
-        // %[[:]flags][width[.precision]][doxXs]
-        //      as in printf, flags are [-+#] and space.  Use a `:' to allow the next character to be a `-' flag, avoiding interpreting "%-" as an operator.
+        | ':' => _parse_num(':', sb, ps) // for - and + flags
+        | '#' => _parse_num('#', sb, ps)
+        | ' ' => _parse_num(' ', sb, ps)
+        | let i: U8 if _is_digit(i) => _parse_num(i, sb, ps)
         // | '?' => mode = If // ok that's not the right way to do this
         else
           error
         end
-        mode = None
+        if mode is Percent then
+          mode = None
+        end
+      | If => error
       else
         if c == '%' then
           mode = Percent

@@ -99,7 +99,7 @@ class ParamStack
     an appropriate `FormatSettings`.
     """
     let a = _stack.pop() as U64
-    append(a.string(fmt))
+    append(a.i64().string(fmt))
 
   fun ref print_c() ? =>
     """

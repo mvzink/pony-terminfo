@@ -96,19 +96,32 @@ class iso _TestParamStackOps is UnitTest
 class iso _TestCapParseBasics is UnitTest
   fun name(): String => "basic capability string parsing operations"
 
-  fun _test(h: TestHelper, test: String, expected: String) ? =>
+  fun _test(h: TestHelper, expected: String, test: String) ? =>
     let parms: Array[StackObject] val = recover ["hello", 42, true, false] end
     let r = recover val ParseString(test, parms) end
-    h.assert_eq[String val](r, expected)
+    h.assert_eq[String val](expected, r)
 
   fun apply(h: TestHelper) ? =>
     // 42 + 32 = 74 -> "J"
-    _test(h, "%' '%'*'%+%c", "J")
+    _test(h, "J", "%' '%'*'%+%c")
     // 42 * 2 = 84 -> "T"
-    _test(h, "%p2%{2}%*%c", "T")
+    _test(h, "T", "%p2%{2}%*%c")
 
-    _test(h, "%'!'%p1%s%c", "hello!")
-    _test(h, "%p2%d", "42")
-    _test(h, "%p1%Pa%p1%' '%','%ga%s%c%c%s", "hello, hello")
-    _test(h, "%{74}%c", "J")
+    _test(h, "hello!", "%'!'%p1%s%c")
+    _test(h, "42", "%p2%d")
+    _test(h, "hello, hello", "%p1%Pa%p1%' '%','%ga%s%c%c%s")
+    _test(h, "J", "%{74}%c")
+
+    _test(h, " 75", "%{75}%3d")
+    _test(h, "        75", "%{75}%10d")
+    _test(h, "        4b", "%{75}%10x")
+    _test(h, "-25", "%{75}%{100}%-%d")
+    _test(h, "000000004B", "%{75}%010X")
+    _test(h, "113       ", "%{75}%:-10o")
+    _test(h, "-25", "%{75}%{100}%-% -1d")
+    _test(h, "-25 ", "%{75}%{100}%-% -4d")
+    _test(h, " 25", "%{25}% -1d")
+    _test(h, " 25 ", "%{25}% -4d")
+    _test(h, "+25 ", "%{25}%:+-4d")
+    _test(h, " 25  ", "%{25}%:+- 5d")
 
