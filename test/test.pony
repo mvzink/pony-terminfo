@@ -93,6 +93,10 @@ class iso _TestParamStackOps is UnitTest
     ps.land()
     h.assert_eq[Bool](ps.if_then(), true)
 
+    ps.push_i(3) // true
+    ps.lnot()
+    h.assert_eq[Bool](ps.if_then(), false)
+
 class iso _TestCapParseBasics is UnitTest
   fun name(): String => "basic capability string parsing operations"
 
@@ -124,4 +128,10 @@ class iso _TestCapParseBasics is UnitTest
     _test(h, " 25 ", "%{25}% -4d")
     _test(h, "+25 ", "%{25}%:+-4d")
     _test(h, " 25  ", "%{25}%:+- 5d")
+
+    _test(h, "SUCCESS", "%?%p2%p2%=%tSUCCESS%eFAIL%;")
+    _test(h, "SUCCESS", "%?%p2%p2%=%!%tFAIL%eSUCCESS%;")
+    _test(h, "SUCCESS", "%?%p2%{1}%+%p2%>%tSUCCESS%eFAIL%;")
+    _test(h, "1",  "%p2%{1}%+%p2%?%p4%t%+%e%p3%t%-%;%d")
+    _test(h, "85", "%p2%{1}%+%p2%?%p3%t%+%e%p4%t%-%;%d")
 

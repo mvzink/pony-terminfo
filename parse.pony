@@ -1,8 +1,9 @@
 primitive Percent
 
-primitive If // Then? Else? idk
+primitive SkippingIfThen
+primitive SkippingIfElse
 
-type Mode is (None | Percent | If)
+type Mode is (None | Percent | SkippingIfThen | SkippingIfElse)
 
 primitive ParseString
 
@@ -105,14 +106,24 @@ primitive ParseString
         | '#' => _parse_num('#', sb, ps)
         | ' ' => _parse_num(' ', sb, ps)
         | let i: U8 if _is_digit(i) => _parse_num(i, sb, ps)
-        // | '?' => mode = If // ok that's not the right way to do this
+        | '?' => None
+        | ';' => None
+        | 't' => if not ps.if_then() then mode = SkippingIfThen end
+        | 'e' => mode = SkippingIfElse
         else
           error
         end
         if mode is Percent then
           mode = None
         end
-      | If => error
+      | SkippingIfThen =>
+        match c
+        | '%' => if sb.next() == 'e' then mode = None end
+        end
+      | SkippingIfElse =>
+        match c
+        | '%' => if sb.next() == ';' then mode = None end
+        end
       else
         if c == '%' then
           mode = Percent

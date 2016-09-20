@@ -239,10 +239,10 @@ class ParamStack
     match _stack.pop()
     | let a: String =>
       let b = _stack.pop() as String
-      _stack.push(a.lt(b))
+      _stack.push(b.lt(a))
     | let a: U64 =>
       let b = _stack.pop() as U64
-      _stack.push(a.lt(b))
+      _stack.push(b.lt(a))
     | let a: Bool =>
       let b = _stack.pop() as Bool
       _stack.push(false)
@@ -252,10 +252,10 @@ class ParamStack
     match _stack.pop()
     | let a: String =>
       let b = _stack.pop() as String
-      _stack.push(a.gt(b))
+      _stack.push(b.gt(a))
     | let a: U64 =>
       let b = _stack.pop() as U64
-      _stack.push(a.gt(b))
+      _stack.push(b.gt(a))
     | let a: Bool =>
       let b = _stack.pop() as Bool
       _stack.push(false)
