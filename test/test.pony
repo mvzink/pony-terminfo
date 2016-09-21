@@ -106,6 +106,9 @@ class iso _TestCapParseBasics is UnitTest
     h.assert_eq[String val](expected, r)
 
   fun apply(h: TestHelper) ? =>
+    _test(h, "", "")
+    _test(h, "hello!", "hello!")
+
     // 42 + 32 = 74 -> "J"
     _test(h, "J", "%' '%'*'%+%c")
     // 42 * 2 = 84 -> "T"
@@ -129,9 +132,12 @@ class iso _TestCapParseBasics is UnitTest
     _test(h, "+25 ", "%{25}%:+-4d")
     _test(h, " 25  ", "%{25}%:+- 5d")
 
-    _test(h, "SUCCESS", "%?%p2%p2%=%tSUCCESS%eFAIL%;")
-    _test(h, "SUCCESS", "%?%p2%p2%=%!%tFAIL%eSUCCESS%;")
-    _test(h, "SUCCESS", "%?%p2%{1}%+%p2%>%tSUCCESS%eFAIL%;")
-    _test(h, "1",  "%p2%{1}%+%p2%?%p4%t%+%e%p3%t%-%;%d")
+    _test(h, "A", "%?%p2%{42}%=%tA%;")
+    _test(h, "B", "%?%p2%{43}%=%tFAIL%;B")
+    _test(h, "C", "%?%p2%p2%=%tC%eFAIL%;")
+    _test(h, "D", "%?%p2%p2%=%!%tFAIL%eD%;")
+    _test(h, "E", "%?%p2%{1}%+%p2%>%tE%eFAIL%;")
+    _test(h, "1", "%p2%{1}%+%p2%?%p4%t%+%e%p3%t%-%;%d")
     _test(h, "85", "%p2%{1}%+%p2%?%p3%t%+%e%p4%t%-%;%d")
+    _test(h, "3", "%?%p4%t%{1}%e%p4%t%{2}%e%p3%t%{3}%e%{4}%;%d")
 

@@ -117,12 +117,17 @@ primitive ParseString
           mode = None
         end
       | SkippingIfThen =>
-        match c
-        | '%' => if sb.next() == 'e' then mode = None end
+        if c == '%' then
+          match sb.next()
+            | 'e' => mode = None
+            | ';' => mode = None
+          end
         end
       | SkippingIfElse =>
-        match c
-        | '%' => if sb.next() == ';' then mode = None end
+        if c == '%' then
+          match sb.next()
+            | ';' => mode = None
+          end
         end
       else
         if c == '%' then
