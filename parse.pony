@@ -105,11 +105,11 @@ primitive ParseString
         | ':' => _parse_num(':', sb, ps) // for - and + flags
         | '#' => _parse_num('#', sb, ps)
         | ' ' => _parse_num(' ', sb, ps)
-        | let i: U8 if _is_digit(i) => _parse_num(i, sb, ps)
         | '?' => None
         | ';' => None
         | 't' => if not ps.if_then() then mode = SkippingIfThen end
         | 'e' => mode = SkippingIfElse
+        | let i: U8 if _is_digit(i) => _parse_num(i, sb, ps)
         else
           error
         end

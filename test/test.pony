@@ -118,6 +118,7 @@ class iso _TestCapParseBasics is UnitTest
     _test(h, "42", "%p2%d")
     _test(h, "hello, hello", "%p1%Pa%p1%' '%','%ga%s%c%c%s")
     _test(h, "J", "%{74}%c")
+    _test(h, "5", "%p1%l%d")
 
     _test(h, " 75", "%{75}%3d")
     _test(h, "        75", "%{75}%10d")
