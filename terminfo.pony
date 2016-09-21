@@ -137,15 +137,15 @@ class val TerminfoDb
       var this_str_size: USize = 0
       var ch: U8 = 0
       while true do
-        ch = data(non_str_size + off + this_str_size + 1)
+        ch = data(non_str_size + off + this_str_size)
         if ch != 0 then
           this_str_size = this_str_size + 1
         else
           break
         end
       end
-      let str_array = data.trim(non_str_size + off + 1,
-                                non_str_size + off + this_str_size + 1)
+      let str_array = data.trim(non_str_size + off,
+                                non_str_size + off + this_str_size)
       let str = String.from_array(str_array)
       _caps.insert(StringBytes(str_names_full(i)), str)
       _caps.insert(StringBytes(str_names_short(i)), str)

@@ -21,6 +21,8 @@ class iso _TestXtermParsing is UnitTest
                            h.env.root as AmbientAuth) as TerminfoDb
     h.assert_true(db("am") as Bool)
     h.assert_eq[U16](db("cols") as U16, 80)
+    h.assert_eq[String](db("smul") as String, "\x1b[4m")
+    h.assert_eq[String](db("rmul") as String, "\x1b[24m")
 
 class iso _TestParamStackOps is UnitTest
   fun name(): String => "parameter stack operations"
