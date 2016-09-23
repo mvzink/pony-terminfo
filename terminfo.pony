@@ -1,6 +1,25 @@
 class Terminfo
   """
-  A type-safe wrapper over the raw TerminfoDb.
+  A type-safe wrapper over the raw TerminfoDb. Currently only full capability
+  names have corresponding methods.
+
+  String capabilities with parameters are evaluated tparm-style (see
+  `ParamStack`). I guess terminfo might technically allow stack evaluation of
+  String capabilities that don't have parameters, but that's not accounted for
+  here.
+
+  These methods will error if
+    1) the terminal type doesn't have that capability
+    2) some programming implementation bug gave the capability the wrong type
+       (`Bool` vs. `Numeric` vs. `String`)
+    3) tparm-style evaluation of a String capability fails
+       - stack programming error
+       - incorrect parameter types
+
+  I tried to guess the correct parameter types for capabilities I can't find in
+  a terminal on my machine, but some are probably wrong. I'm not planning on a
+  subset of terminals covering all capabilities, or auditing capabilities I'm
+  not going to use, so those errors are probably going to lurk.
   """
 
   let _db: TerminfoDb
