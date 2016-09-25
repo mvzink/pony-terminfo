@@ -1,22 +1,3 @@
-"""
-# terminfo package
-
-Parses terminfo compiled databases. Allows querying terminal capabilities.
-
-```
-use "terminfo"
-
-actor Main
-  new create(env: Env) =>
-    try
-      let db = GetTerminalInfo(env) as TerminfoDb
-      let underline = db("smul") as String
-      let underline_off = db("rmul") as String
-      env.out.print("Hello " + underline + "world!" + underline_off)
-    end
-```
-"""
-
 use "options"
 use "collections"
 use "files"

@@ -1,7 +1,18 @@
+"""
+# terminfo package
+
+Facilities for loading terminfo compiled databases. A typed wrapper over a trie
+allows evaluating parameterized string capabilities (such as `sgr`) in a
+type-safe manner, and querying capabilities by name without typing out strings
+yourself; we don't want you hardcoding strings yourself, after all!
+```
+"""
+
 class Terminfo
   """
   A type-safe wrapper over the raw TerminfoDb. Currently only full capability
-  names have corresponding methods.
+  names have corresponding methods, even though the underlying trie also stores
+  capabilities by their short names.
 
   String capabilities with parameters are evaluated tparm-style (see
   `ParamStack`). I guess terminfo might technically allow stack evaluation of
@@ -11,15 +22,15 @@ class Terminfo
   These methods will error if
     1) the terminal type doesn't have that capability
     2) some programming implementation bug gave the capability the wrong type
-       (`Bool` vs. `Numeric` vs. `String`)
-    3) tparm-style evaluation of a String capability fails
+       (`Bool` vs. `U16` vs. `String`; yell at me please)
+    3) tparm-style evaluation of a string capability fails
        - stack programming error
        - incorrect parameter types
 
   I tried to guess the correct parameter types for capabilities I can't find in
-  a terminal on my machine, but some are probably wrong. I'm not planning on a
-  subset of terminals covering all capabilities, or auditing capabilities I'm
-  not going to use, so those errors are probably going to lurk.
+  a database on my machine, but some are probably wrong. I'm not planning on
+  testing a subset of terminals covering all capabilities, or auditing
+  capabilities I'm not going to use, so those errors are probably going to lurk.
   """
 
   let _db: TerminfoDb
