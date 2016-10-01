@@ -1,8 +1,0 @@
-{
-  "deps": [
-    {
-      "type": "local-git",
-      "local-path": "/Users/mvzink/projects/pony-trie/"
-    }
-  ]
-}

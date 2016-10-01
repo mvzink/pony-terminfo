@@ -1,7 +1,7 @@
 """
 # terminfo package
 
-Facilities for loading terminfo compiled databases. A typed wrapper over a trie
+Facilities for loading terminfo compiled databases. A typed wrapper over a Map
 allows evaluating parameterized string capabilities (such as `sgr`) in a
 type-safe manner, and querying capabilities by name without typing out strings
 yourself; we don't want you hardcoding strings yourself, after all!
@@ -11,7 +11,7 @@ yourself; we don't want you hardcoding strings yourself, after all!
 class Terminfo
   """
   A type-safe wrapper over the raw TerminfoDb. Currently only full capability
-  names have corresponding methods, even though the underlying trie also stores
+  names have corresponding methods, even though the underlying Map also stores
   capabilities by their short names.
 
   String capabilities with parameters are evaluated tparm-style (see

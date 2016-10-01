@@ -25,6 +25,6 @@ Currently supports:
 * Detect terminal type... okay, well, only from `$TERM`. And we only look for
   the entry in `/usr/share/terminfo`, but it could be in other places. (*TODO*.)
 * Parse the corresponding compiled terminfo database and shove all the
-  capabilities into a trie.
+  capabilities into a HashMap.
 * Wrap it (with types!) so you don't have to hardcode strings yourself.
 * Evaluate parameterized string capabilities (such as `sgr`/`set_attributes`).

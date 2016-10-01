@@ -2,7 +2,6 @@ use "options"
 use "collections"
 use "files"
 use "buffered"
-use "trie"
 
 type Cap is (Bool | U16 | String)
 
@@ -24,7 +23,7 @@ class val TerminfoDb
   let str_names_short: Array[String val] val
   let str_names_full: Array[String val] val
 
-  let _caps: TrieNode[Cap]
+  let _caps: Map[String, Cap]
 
   new val create(data: Array[U8 val] val) ? =>
     let rb = Reader
@@ -38,7 +37,7 @@ class val TerminfoDb
     str_names_short = StrNamesShort()
     str_names_full = StrNamesFull()
 
-    _caps = TrieNode[Cap]
+    _caps = Map[String, Cap]
 
     match rb.u16_le()
     | 0x11a => None // 0432 in octal; not supported in pony?
@@ -77,8 +76,8 @@ class val TerminfoDb
       end
       let cap_name_full = bool_names_full(i)
       if rb.u8() != 0 then
-        _caps.insert(StringBytes(cap_name_short), true)
-        _caps.insert(StringBytes(cap_name_full), true)
+        _caps.insert(cap_name_short, true)
+        _caps.insert(cap_name_full, true)
       end
     end
 
@@ -93,8 +92,8 @@ class val TerminfoDb
       end
       let cap_name_full = num_names_full(i)
       let num = rb.u16_le()
-      _caps.insert(StringBytes(cap_name_short), num)
-      _caps.insert(StringBytes(cap_name_full), num)
+      _caps.insert(cap_name_short, num)
+      _caps.insert(cap_name_full, num)
     end
 
     let str_offsets = Map[USize, USize]()
@@ -128,8 +127,8 @@ class val TerminfoDb
       let str_array = data.trim(non_str_size + off,
                                 non_str_size + off + this_str_size)
       let str = String.from_array(str_array)
-      _caps.insert(StringBytes(str_names_full(i)), str)
-      _caps.insert(StringBytes(str_names_short(i)), str)
+      _caps.insert(str_names_full(i), str)
+      _caps.insert(str_names_short(i), str)
     end
 
   fun val apply(cap: String): (None | Cap) =>
@@ -137,7 +136,11 @@ class val TerminfoDb
     Retrieve a capability. Capabilities are accessible by full name or short
     name (e.g. both "enter_underline_mode" and "smul" work) via `apply()`.
     """
-    _caps(StringBytes(cap))
+    try
+      _caps(cap)
+    else
+      None
+    end
 
 primitive GetTerminfoDb
   """
