@@ -1,5 +1,5 @@
 use "ponytest"
-use ".."
+use "../terminfo"
 
 actor Main is TestList
   new create(env: Env) =>

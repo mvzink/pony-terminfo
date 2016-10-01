@@ -2,7 +2,7 @@ use "options"
 use "collections"
 use "files"
 use "buffered"
-use "../trie"
+use "trie"
 
 type Cap is (Bool | U16 | String)
 

@@ -1,4 +1,4 @@
-use ".."
+use "../terminfo"
 
 actor Main
   new create(env: Env) =>

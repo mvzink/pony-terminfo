@@ -1,4 +1,4 @@
-use ".."
+use "../terminfo"
 use "options"
 
 actor Main
