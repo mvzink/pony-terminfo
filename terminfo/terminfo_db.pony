@@ -129,13 +129,9 @@ class val TerminfoDb
       _caps.insert(str_names_short(i), str)
     end
 
-  fun val apply(cap: String): (None | Cap) =>
+  fun val apply(cap: String): Cap ? =>
     """
     Retrieve a capability. Capabilities are accessible by full name or short
     name (e.g. both "enter_underline_mode" and "smul" work) via `apply()`.
     """
-    try
-      _caps(cap)
-    else
-      None
-    end
+    _caps(cap)
