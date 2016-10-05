@@ -1,3 +1,7 @@
+"""
+Useless stuff for debugging which I should probably remove.
+"""
+
 use "../terminfo"
 use "options"
 

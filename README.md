@@ -1,4 +1,4 @@
-# pterminfo
+# pony-terminfo
 
 Let's do cool stuff in terminals!
 
@@ -10,11 +10,10 @@ use "terminfo"
 actor Main
   new create(env: Env) =>
     try
-      let db = GetTerminalInfo(env) as TerminfoDb
-      let tinfo = Terminfo(db)
-      env.out.print("Greetings " + tinfo.set_a_foreground(4) +
-                    tinfo.enter_underline_mode() + "Pony" +
-                    tinfo.exit_attribute_mode() + "!")
+      let db = GetTerminalInfo(env) as Terminfo
+      env.out.print("Greetings " + db.set_a_foreground(4) +
+                    db.enter_underline_mode() + "Pony" +
+                    db.exit_attribute_mode() + "!")
     end
 ```
 
