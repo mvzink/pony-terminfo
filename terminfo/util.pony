@@ -1,6 +1,7 @@
 use "files"
 use "collections"
 use "options"
+use "format"
 
 primitive GetTerminfoDb
   """
@@ -19,8 +20,7 @@ primitive GetTerminalName
   fun apply(vars: Map[String, String] val): String ? =>
     let term_name = vars("TERM")
     let first_letter = recover val
-      let hex_fmt = FormatSettingsInt.set_format(FormatHexSmallBare).set_width(2)
-      term_name(0).string(hex_fmt)
+      Format.int[U8](where x = term_name(0), fmt = FormatHexSmallBare, width = 2)
     end
     Path.join(Path.join("/usr/share/terminfo", first_letter), term_name)
 

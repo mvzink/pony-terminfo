@@ -62,7 +62,7 @@ class iso _TestParamStackOps is UnitTest
     ps.int_const(21)
     ps.sub()
     expected.append("21")
-    ps.format(FormatDefaultNumber)
+    ps.format()
     h.assert_eq[String ref](ps.out(), consume expected)
     expected = recover String end
 

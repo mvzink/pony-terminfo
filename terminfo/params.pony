@@ -1,4 +1,5 @@
 use "collections"
+use "format"
 
 primitive _Add
   fun apply(a: U64, b: U64): U64 =>
@@ -89,7 +90,10 @@ class ParamStack
 
   // Stack's responsibility:
 
-  fun ref format(fmt: FormatSettings[FormatInt, PrefixNumber] = FormatDefaultNumber) ? =>
+  fun ref format(fmt: FormatInt = FormatDefault,
+                 prefix: PrefixNumber = PrefixDefault, // prec: USize = -1,
+                 width: USize = 0, align: Align = AlignLeft, fill: U32 = ' ')
+                 ? =>
     """
     %[[:]flags][width[.precision]][doxXs]
         as in printf, flags are [-+#] and space. Use a `:' to allow the next
@@ -99,7 +103,7 @@ class ParamStack
     an appropriate `FormatSettings`.
     """
     let a = _stack.pop() as U64
-    append(a.i64().string(fmt))
+    append(Format.int[I64](a.i64(), fmt, prefix, -1, width, align, fill))
 
   fun ref print_c() ? =>
     """

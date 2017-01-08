@@ -1,3 +1,5 @@
+use "format"
+
 primitive Percent
 
 primitive SkippingIfThen
@@ -11,16 +13,19 @@ primitive ParseString
     (48 <= i) and (i <= 57)
 
   fun _parse_num(i: U8, sb: StringBytes, ps: ParamStack) ? =>
-    let fmt = FormatSettingsInt
+    var prefix: PrefixNumber = PrefixDefault
+    var width: USize = 0
+    var align: Align = AlignRight
+    var fill: U32 = ' '
 
     var flag = i
     while not _is_digit(flag) or (flag == '0') do
       match flag
       | '#' => error
-      | '0' => fmt.set_fill('0')
-      | '-' => fmt.set_align(AlignLeft)
-      | ' ' => fmt.set_prefix(PrefixSpace)
-      | '+' => fmt.set_prefix(PrefixSign)
+      | '0' => fill =  '0'
+      | '-' => align = AlignLeft
+      | ' ' => prefix = PrefixSpace
+      | '+' => prefix = PrefixSign
       end
       flag = sb.next()
     end
@@ -33,21 +38,23 @@ primitive ParseString
       width_str.push(sb.next())
     end
     match width_str.read_int[USize]()
-    | (let width: USize, let used: USize) =>
+    | (let width': USize, let used: USize) =>
       if used > 0 then
-        fmt.set_width(width)
+        width = width'
       end
     end
     if sb.peek() == '.' then
       // precision
       error
     end
-    match sb.next()
-    | 'd' => ps.format(fmt)
-    | 'o' => ps.format(fmt.set_format(FormatOctalBare))
-    | 'x' => ps.format(fmt.set_format(FormatHexSmallBare))
-    | 'X' => ps.format(fmt.set_format(FormatHexBare))
+    let fmt: FormatInt = match sb.next()
+    | 'o' => FormatOctalBare
+    | 'x' => FormatHexSmallBare
+    | 'X' => FormatHexBare
+    else
+      FormatDefault
     end
+    ps.format(fmt, prefix, width, align, fill)
 
   fun apply(s: String, params: Array[StackObject] val): String iso^ ? =>
     let sb = StringBytes(s)
@@ -98,10 +105,10 @@ primitive ParseString
         | '!' => ps.lnot()
         | '~' => ps.bnot()
         | 'i' => ps.add_i() // still idk wtf
-        | 'd' => ps.format(FormatDefaultNumber)
-        | 'o' => ps.format(FormatSettingsInt.set_format(FormatOctalBare))
-        | 'x' => ps.format(FormatSettingsInt.set_format(FormatHexSmallBare))
-        | 'X' => ps.format(FormatSettingsInt.set_format(FormatHexBare))
+        | 'd' => ps.format(FormatDefault)
+        | 'o' => ps.format(FormatOctalBare)
+        | 'x' => ps.format(FormatHexSmallBare)
+        | 'X' => ps.format(FormatHexBare)
         | ':' => _parse_num(':', sb, ps) // for - and + flags
         | '#' => _parse_num('#', sb, ps)
         | ' ' => _parse_num(' ', sb, ps)
